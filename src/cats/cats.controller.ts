@@ -11,36 +11,37 @@ import {
 import { CreateCatDto } from './dto/create-cats.dto';
 import { UpdateCatDto } from './dto/update-cats.dto';
 import { ListAllEntities } from './dto/list-cats.dto';
+import { CatsService } from './cats.service';
 
 @Controller('cats')
 export class CatsController {
+  constructor(private readonly catsService: CatsService) {}
+
   @Post()
-  create(@Body() createCatDto: CreateCatDto) {
-    return {
-      name: createCatDto.name,
-    };
+  async create(@Body() createCatDto: CreateCatDto) {
+    this.catsService.create(createCatDto);
+    return 'A cat has been created!';
   }
 
   @Get()
-  findAll(@Query() query: ListAllEntities) {
-    return `This action returns all cats (limit: ${query.limit} items)`;
+  async findAll(@Query('limit') limit: ListAllEntities) {
+    return this.catsService.findAll(limit);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return `This action returns a #${id} cat`;
+  async findOne(@Param('id') id: string) {
+    return this.catsService.findOne(+id);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
-    return {
-      id,
-      ...updateCatDto,
-    };
+  async update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto) {
+    this.catsService.update(+id, updateCatDto);
+    return `This action updates a #${id} cat`;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
+    this.catsService.deleteCat(+id);
     return `This action removes a #${id} cat`;
   }
 }
